@@ -35,6 +35,8 @@ class A1Env(MujocoEnv, utils.EzPickle):
         contact_force_range=(-1.0, 1.0),
         reset_noise_scale=0.1,
         exclude_current_positions_from_observation=True,
+        kp = 40,
+        kd = 0.1,
         **kwargs,
     ):
         current_dir = os.path.dirname(__file__)
@@ -53,6 +55,8 @@ class A1Env(MujocoEnv, utils.EzPickle):
             contact_force_range,
             reset_noise_scale,
             exclude_current_positions_from_observation,
+            kp,
+            kd,
             **kwargs,
         )
 
@@ -72,6 +76,8 @@ class A1Env(MujocoEnv, utils.EzPickle):
         self._exclude_current_positions_from_observation = (
             exclude_current_positions_from_observation
         )
+        self._kp = kp
+        self._kd = kd
 
         obs_shape = 35
         if not exclude_current_positions_from_observation:
@@ -130,6 +136,7 @@ class A1Env(MujocoEnv, utils.EzPickle):
         return terminated
 
     def step(self, action):
+        # TODO: Add PD control
         xy_position_before = self.get_body_com("trunk")[:2].copy()
         self.do_simulation(action, self.frame_skip)
         xy_position_after = self.get_body_com("trunk")[:2].copy()
